@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .wrapper {
+        @apply flex flex-col items-center justify-center;
+    }
+}
