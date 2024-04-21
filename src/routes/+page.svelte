@@ -12,8 +12,10 @@
 
 	let guesses: Array<Partial<Car>> = [];
 	let guessesLeft = 10;
+
 	let discoveredKeys = ['name'];
     let hintUsed = false;
+    const hintThreshold = 3;
 
 	let selected: Nullable<ComboboxEntry>;
 
@@ -28,6 +30,7 @@
 
 		if (guessesLeft === 0) {
 			alert('you lose');
+            location.reload();
 		}
     }
 
@@ -44,6 +47,8 @@
 	// TODO: stores, state
 	function guessCar() {
 		const guess = data.carlist[selected?.index];
+        addGuess(guess);
+
 		for (const [k1, v1] of Object.entries(answer)) {
 			for (const [k2, v2] of Object.entries(guess)) {
 				if (k1 == k2 && v1 == v2) {
@@ -54,6 +59,7 @@
 
 		if (selected?.index === data.answer) {
 			alert('you win');
+            location.reload();
 		}
 
 		selected = null;
@@ -79,7 +85,7 @@
 	<button on:click={guessCar} disabled={!selected} class="join-item btn btn-primary shadow-md">
 		Guess
 	</button>
-	{#if guessesLeft <= 12 && !hintUsed}
+	{#if guessesLeft <= hintThreshold && !hintUsed}
 		<button on:click={giveHint} class="join-item btn btn-accent shadow-md"> Hint </button>
 	{/if}
 </div>
