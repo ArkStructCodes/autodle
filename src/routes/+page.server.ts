@@ -1,15 +1,10 @@
 import type { LoadEvent } from '@sveltejs/kit';
-import type { Carlist } from '$lib/schema';
 import { CarlistSchema } from '$lib/schema';
-
-
-function randInt(n: number) {
-    return Math.floor(Math.random() * (n + 1));
-}
+import { randInt } from '$lib/utils';
 
 export async function load({ fetch }: LoadEvent) {
     const data = await fetch('/data.json');
-    const carlist: Carlist = await data.json();
+    const carlist = await data.json();
 
     // TODO: error handling
     CarlistSchema.parse(carlist);
