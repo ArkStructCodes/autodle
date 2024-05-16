@@ -29,7 +29,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"svelte-select": "^5.8.3",
 		"zod": "^3.22.4"
 	}
 }

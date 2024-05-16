@@ -12,14 +12,13 @@
 			return 'bg-base-300';
 		}
 
-        // will always be 1 or greater
 		const segment = Math.floor(Math.max(1, health - 1) / segmentLength);
-        const colorIndex = Math.min(colors.length - 1, segment);
+		const colorIndex = Math.min(colors.length - 1, segment);
 		return `bg-${colors[colorIndex]}`;
 	}
 </script>
 
-<div class="flex justify-around gap-4 p-4 my-2 bg-base-200 rounded-lg">
+<div class={`flex items-center justify-around gap-2 ${$$props.class}`}>
 	{#each { length: max } as _, dot}
 		<span class={`size-4 ${getColor(remaining, dot)} rounded-full`}></span>
 	{/each}

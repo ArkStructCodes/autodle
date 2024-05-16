@@ -4,38 +4,45 @@
 	export let guesses: Array<Partial<Car>>;
 	export let answer: Car;
 
-	function isEqual(lhs: any, rhs: any) {
+	/** Sets background color according to the relation between `lhs` and `rhs`. */
+	function matches(lhs: string, rhs: string | undefined): string {
 		return lhs === rhs ? 'bg-success' : 'bg-error';
 	}
 
-	function inRange(lhs: number, rhs: number | undefined, range: number) {
-        if (typeof rhs !== 'number') {
-            return 'bg-error';
-        }
+	/**
+	 * Sets background color according to the relation between `lhs` and `rhs`.
+	 * Adds directional pointer after content when `lhs` does not equal `rhs`.
+	 */
+	function within(lhs: number, rhs: number | undefined, range: number): string {
+		if (typeof rhs !== 'number') {
+			return 'bg-error';
+		}
 
-        const classes = ['after:p-2', 'after:text-xl'];
+		const classes = [];
 
 		if (lhs == rhs) {
 			classes.push('bg-success');
 		} else {
-            if (Math.abs(lhs - rhs) <= range) {
-                classes.push("bg-warning");
-            } else {
-                classes.push('bg-error');
-            }
+			if (Math.abs(lhs - rhs) <= range) {
+				classes.push('bg-warning');
+			} else {
+				classes.push('bg-error');
+			}
 
-            if (lhs > rhs) {
-                classes.push("after:content-['↑']");
-            } else {
-                classes.push("after:content-['↓']");
-            }
+			if (lhs > rhs) {
+				classes.push('after:content-["🞁"]');
+			} else {
+				classes.push('after:content-["🞃"]');
+			}
+
+			classes.push('after:px-2');
 		}
 
-        return classes.join(' ');
+		return classes.join(' ');
 	}
 </script>
 
-<table class="table table-lg table-pin-rows">
+<table class="table table-pin-rows table-lg">
 	<thead>
 		<tr>
 			<td>Make</td>
@@ -46,15 +53,15 @@
 			<td>Weight (kg)</td>
 		</tr>
 	</thead>
-	<tbody class="text-white font-bold" style="text-shadow: 2px 2px 4px #00000080">
+	<tbody class="font-bold text-neutral">
 		{#each guesses as car}
 			<tr>
-				<td class={isEqual(answer.make, car.make)}>{car.make || ''}</td>
-				<td class={isEqual(answer.name, car.name)}>{car.name || ''}</td>
-				<td class={inRange(answer.year, car.year, 5)}>{car.year || ''}</td>
-				<td class={isEqual(answer.drivetrain, car.drivetrain)}>{car.drivetrain || ''}</td>
-				<td class={inRange(answer.power, car.power, 25)}>{car.power || ''}</td>
-				<td class={inRange(answer.weight, car.weight, 100)}>{car.weight || ''}</td>
+				<td class={matches(answer.make, car.make)}>{car.make || ''}</td>
+				<td class={matches(answer.name, car.name)}>{car.name || ''}</td>
+				<td class={within(answer.year, car.year, 5)}>{car.year || ''}</td>
+				<td class={matches(answer.drivetrain, car.drivetrain)}>{car.drivetrain || ''}</td>
+				<td class={within(answer.power, car.power, 25)}>{car.power || ''}</td>
+				<td class={within(answer.weight, car.weight, 100)}>{car.weight || ''}</td>
 			</tr>
 		{/each}
 	</tbody>

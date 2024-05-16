@@ -1,11 +1,12 @@
 <script lang="ts">
 	export let data;
 
-	import type { Car, ComboboxEntry, Nullable } from '$lib/types';
+	import type { Car, ComboboxEntry } from '$lib/types';
 	import { randInt, showDialog } from '$lib/utils';
 	import GuessTable from './GuessTable.svelte';
 	import ComboboxDialog from '$lib/components/ComboboxDialog.svelte';
 	import Healthbar from './Healthbar.svelte';
+	import Controls from './Controls.svelte';
 
 	const answer = data.carlist[data.answer];
 	console.log(answer);
@@ -14,10 +15,10 @@
 	let guessesLeft = 10;
 
 	let discoveredKeys = ['name'];
-    let hintUsed = false;
-    const hintThreshold = 3;
+	let hintUsed = false;
+	const hintThreshold = 3;
 
-	let selected: Nullable<ComboboxEntry>;
+	let selected: ComboboxEntry | null;
 
 	function addGuess(guess: Partial<Car>) {
 		if (guesses.includes(guess)) {
@@ -30,9 +31,9 @@
 
 		if (guessesLeft === 0) {
 			alert('you lose');
-            location.reload();
+			location.reload();
 		}
-    }
+	}
 
 	function giveHint() {
 		const hintableKeys = Object.keys(answer).filter((k) => !discoveredKeys.includes(k));
@@ -40,14 +41,14 @@
 		const hint = Object.fromEntries([[hintKey, answer[hintKey]]]);
 
 		discoveredKeys = [...discoveredKeys, hintKey];
-        addGuess(hint);
-        hintUsed = true;
+		addGuess(hint);
+		hintUsed = true;
 	}
 
 	// TODO: stores, state
 	function guessCar() {
 		const guess = data.carlist[selected?.index];
-        addGuess(guess);
+		addGuess(guess);
 
 		for (const [k1, v1] of Object.entries(answer)) {
 			for (const [k2, v2] of Object.entries(guess)) {
@@ -59,7 +60,7 @@
 
 		if (selected?.index === data.answer) {
 			alert('you win');
-            location.reload();
+			location.reload();
 		}
 
 		selected = null;
@@ -69,25 +70,23 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 overflow-hidden">
-	<Healthbar max={10} remaining={guessesLeft} />
-
-	<div class="size-full overflow-auto">
+	<div class="my-4 lg:join max-lg:space-y-4">
+		<Healthbar
+			max={10}
+			remaining={guessesLeft}
+			class="rounded-l-lg p-4 lg:join-item lg:bg-base-200 lg:shadow-sm"
+		/>
+		<Controls
+			{selected}
+			onselect={() => showDialog(dialogId)}
+			onguess={guessCar}
+			onhint={giveHint}
+			hintCondition={() => guessesLeft <= hintThreshold}
+		/>
+	</div>
+	<div class="w-full overflow-auto lg:w-1/2">
 		<GuessTable {guesses} {answer} />
 	</div>
-</div>
-
-<div class="join flex justify-center fixed bottom-8 w-full">
-	<button on:click={() => showDialog(dialogId)} class="join-item btn btn-wide shadow-md">
-		<span class="truncate">
-			{selected ? selected.label : 'Select car'}
-		</span>
-	</button>
-	<button on:click={guessCar} disabled={!selected} class="join-item btn btn-primary shadow-md">
-		Guess
-	</button>
-	{#if guessesLeft <= hintThreshold && !hintUsed}
-		<button on:click={giveHint} class="join-item btn btn-accent shadow-md"> Hint </button>
-	{/if}
 </div>
 
 <ComboboxDialog id={dialogId} entries={data.names} bind:selected />
