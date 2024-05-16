@@ -70,20 +70,14 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 overflow-hidden">
-	<div class="my-4 lg:join max-lg:space-y-4">
-		<Healthbar
-			max={10}
-			remaining={guessesLeft}
-			class="rounded-l-lg p-4 lg:join-item lg:bg-base-200 lg:shadow-sm"
-		/>
+		<Healthbar max={10} remaining={guessesLeft} />
 		<Controls
 			{selected}
 			onselect={() => showDialog(dialogId)}
 			onguess={guessCar}
 			onhint={giveHint}
-			hintCondition={() => guessesLeft <= hintThreshold}
+			hintCondition={() => guessesLeft <= hintThreshold && !hintUsed}
 		/>
-	</div>
 	<div class="w-full overflow-auto lg:w-1/2">
 		<GuessTable {guesses} {answer} />
 	</div>

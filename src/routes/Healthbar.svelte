@@ -18,7 +18,7 @@
 	}
 </script>
 
-<div class={`flex items-center justify-around gap-2 ${$$props.class}`}>
+<div class="flex items-center justify-around gap-2 p-4">
 	{#each { length: max } as _, dot}
 		<span class={`size-4 ${getColor(remaining, dot)} rounded-full`}></span>
 	{/each}
