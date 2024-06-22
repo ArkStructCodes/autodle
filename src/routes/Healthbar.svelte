@@ -3,8 +3,6 @@
 	export let remaining: number;
 
 	const colors = ['error', 'warning', 'success'];
-
-	// will always be 1 or greater
 	const segmentLength = Math.max(1, Math.floor(max / colors.length));
 
 	function getColor(health: number, dot: number) {

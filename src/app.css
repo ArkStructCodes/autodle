@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 @layer utilities {
-    .wrapper {
-        @apply flex flex-col items-center justify-center;
-    }
+	.wrapper {
+		@apply flex flex-col items-center justify-center;
+	}
+}
+
+/* temporary fix for modal scrollbars */
+html {
+	scrollbar-gutter: auto !important;
 }

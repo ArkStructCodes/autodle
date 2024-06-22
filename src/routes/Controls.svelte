@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { ComboboxEntry } from '$lib/types';
+	import type { SearchEntry } from '$lib/types';
 
-	export let selected: ComboboxEntry | null;
+	export let selected: SearchEntry | null;
 	export let onselect: () => void;
 	export let onguess: () => void;
 	export let onhint: () => void;
 	export let hintCondition: () => boolean;
 </script>
 
-<div class={`join flex justify-center ${$$props.class}`}>
-	<button on:click={onselect} class="btn btn-wide join-item">
+<div class="join flex justify-center">
+	<button on:click={onselect} class="btn join-item w-48">
 		<span class="truncate">
 			{selected ? selected.label : 'Select car'}
 		</span>

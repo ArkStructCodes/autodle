@@ -1,6 +1,6 @@
 import type { LoadEvent } from '@sveltejs/kit';
 import { CarlistSchema } from '$lib/schema';
-import { randInt } from '$lib/utils';
+import type { SearchEntry } from '$lib/types';
 
 export async function load({ fetch }: LoadEvent) {
 	const data = await fetch('/data.json');
@@ -9,13 +9,11 @@ export async function load({ fetch }: LoadEvent) {
 	// TODO: error handling
 	CarlistSchema.parse(carlist);
 
-	let names = [];
+	let names: SearchEntry[] = [];
 	for (let i = 0; i < carlist.length; i++) {
 		const car = carlist[i];
 		names.push({ index: i, label: `${car.year} ${car.name}` });
 	}
 
-	const answer = randInt(carlist.length);
-
-	return { carlist, names, answer };
+	return { carlist, names };
 }

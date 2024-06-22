@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Car } from '$lib/types';
 
+	import { fade } from 'svelte/transition';
+
 	export let guesses: Array<Partial<Car>>;
 	export let answer: Car;
 
@@ -30,9 +32,9 @@
 			}
 
 			if (lhs > rhs) {
-				classes.push('after:content-["🞁"]');
+				classes.push('after:content-["▲"]');
 			} else {
-				classes.push('after:content-["🞃"]');
+				classes.push('after:content-["▼"]');
 			}
 
 			classes.push('after:px-2');
@@ -55,13 +57,13 @@
 	</thead>
 	<tbody class="font-bold text-neutral">
 		{#each guesses as car}
-			<tr>
-				<td class={matches(answer.make, car.make)}>{car.make || ''}</td>
-				<td class={matches(answer.name, car.name)}>{car.name || ''}</td>
-				<td class={within(answer.year, car.year, 5)}>{car.year || ''}</td>
-				<td class={matches(answer.drivetrain, car.drivetrain)}>{car.drivetrain || ''}</td>
-				<td class={within(answer.power, car.power, 25)}>{car.power || ''}</td>
-				<td class={within(answer.weight, car.weight, 100)}>{car.weight || ''}</td>
+			<tr in:fade={{ duration: 400 }}>
+				<td class={matches(answer.make, car?.make)}>{car?.make || ''}</td>
+				<td class={matches(answer.name, car?.name)}>{car?.name || ''}</td>
+				<td class={within(answer.year, car?.year, 5)}>{car?.year || ''}</td>
+				<td class={matches(answer.drivetrain, car?.drivetrain)}>{car?.drivetrain || ''}</td>
+				<td class={within(answer.power, car?.power, 25)}>{car?.power || ''}</td>
+				<td class={within(answer.weight, car?.weight, 100)}>{car?.weight || ''}</td>
 			</tr>
 		{/each}
 	</tbody>

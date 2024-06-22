@@ -1,86 +1,95 @@
 <script lang="ts">
 	export let data;
 
-	import type { Car, ComboboxEntry } from '$lib/types';
-	import { randInt, showDialog } from '$lib/utils';
-	import GuessTable from './GuessTable.svelte';
-	import ComboboxDialog from '$lib/components/ComboboxDialog.svelte';
+	import type { Car } from '$lib/types';
+	import { randomInteger, matchingFields } from '$lib/utils';
+
 	import Healthbar from './Healthbar.svelte';
 	import Controls from './Controls.svelte';
+	import GuessTable from './GuessTable.svelte';
+	import Search from './Search.svelte';
+	// import SummaryModal from './SummaryModal.svelte';
 
-	const answer = data.carlist[data.answer];
-	console.log(answer);
+	import gameData from './stores';
+	import Alert from './Alert.svelte';
 
-	let guesses: Array<Partial<Car>> = [];
-	let guessesLeft = 10;
+	const { guesses, guessesUsed, selected, discoveredFields, hintUsed } = gameData;
+	let answer: Car;
 
-	let discoveredKeys = ['name'];
-	let hintUsed = false;
-	const hintThreshold = 3;
+	function generateAnswer() {
+		const answerIndex = randomInteger(data.carlist.length);
+		answer = data.carlist[answerIndex];
+		console.log(answer.name);
+	}
 
-	let selected: ComboboxEntry | null;
+	const hintThreshold = 7;
+	const maxGuesses = 10;
+
+	let alert: Alert;
+	let search: Search;
 
 	function addGuess(guess: Partial<Car>) {
-		if (guesses.includes(guess)) {
-			alert('this has already been guessed');
+		if ($guesses.includes(guess)) {
+			alert.show('This car has already been guessed, choose a different car.');
 			return;
 		}
 
-		guesses = [...guesses, guess];
-		guessesLeft -= 1;
-
-		if (guessesLeft === 0) {
-			alert('you lose');
-			location.reload();
-		}
+		guesses.push(guess);
+		$guessesUsed += 1;
 	}
 
 	function giveHint() {
-		const hintableKeys = Object.keys(answer).filter((k) => !discoveredKeys.includes(k));
-		const hintKey = hintableKeys[randInt(hintableKeys.length - 1)];
+		const hintableKeys = Object.keys(answer).filter(
+			(key) => !$discoveredFields.includes(key as keyof Car)
+		) as Array<keyof Car>;
+		const hintKey = hintableKeys[randomInteger(hintableKeys.length - 1)];
 		const hint = Object.fromEntries([[hintKey, answer[hintKey]]]);
-
-		discoveredKeys = [...discoveredKeys, hintKey];
 		addGuess(hint);
-		hintUsed = true;
+
+		discoveredFields.push(hintKey);
+		$hintUsed = true;
 	}
 
-	// TODO: stores, state
 	function guessCar() {
-		const guess = data.carlist[selected?.index];
+		// this will never be called when `selected` is `null`
+		const guess = data.carlist[$selected?.index as number];
 		addGuess(guess);
 
-		for (const [k1, v1] of Object.entries(answer)) {
-			for (const [k2, v2] of Object.entries(guess)) {
-				if (k1 == k2 && v1 == v2) {
-					discoveredKeys = [...discoveredKeys, k1];
-				}
-			}
+		for (const field of matchingFields(guess, answer)) {
+			discoveredFields.push(field as keyof Car);
 		}
 
-		if (selected?.index === data.answer) {
-			alert('you win');
-			location.reload();
-		}
-
-		selected = null;
+		$selected = null;
 	}
 
-	const dialogId = 'dialog';
+	$: if ($guessesUsed === maxGuesses) {
+		alert?.show('you lose');
+		generateAnswer();
+		gameData.reset();
+	}
+
+	$: if ($guesses.at(-1) === answer) {
+		alert?.show('you win');
+		generateAnswer();
+		gameData.reset();
+	}
 </script>
 
 <div class="flex flex-col items-center gap-4 overflow-hidden">
-		<Healthbar max={10} remaining={guessesLeft} />
-		<Controls
-			{selected}
-			onselect={() => showDialog(dialogId)}
-			onguess={guessCar}
-			onhint={giveHint}
-			hintCondition={() => guessesLeft <= hintThreshold && !hintUsed}
-		/>
+	<Healthbar max={maxGuesses} remaining={maxGuesses - $guessesUsed} />
+	<Controls
+		bind:selected={$selected}
+		onselect={() => search.show()}
+		onguess={guessCar}
+		onhint={giveHint}
+		hintCondition={() =>
+			!$hintUsed && $guessesUsed >= hintThreshold && $guessesUsed < maxGuesses - 1}
+	/>
 	<div class="w-full overflow-auto lg:w-1/2">
-		<GuessTable {guesses} {answer} />
+		<GuessTable guesses={$guesses} {answer} />
 	</div>
 </div>
 
-<ComboboxDialog id={dialogId} entries={data.names} bind:selected />
+<Search entries={data.names} bind:selected={$selected} bind:this={search} />
+<!-- <SummaryModal guessesMade={maxGuesses - $guessesLeft} /> -->
+<Alert bind:this={alert} />
