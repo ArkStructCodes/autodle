@@ -8,18 +8,18 @@ const discoveredFields = createArrayStore<keyof Car>(['name']);
 const hintUsed = createStore(false);
 
 function reset() {
-	guesses.reset();
-	guessesUsed.reset();
-	selected.reset();
-	discoveredFields.reset();
-	hintUsed.reset();
+  guesses.reset();
+  guessesUsed.reset();
+  selected.reset();
+  discoveredFields.reset();
+  hintUsed.reset();
 }
 
 export default {
-	guesses,
-	guessesUsed,
-	selected,
-	discoveredFields,
-	hintUsed,
-	reset
+  guesses,
+  guessesUsed,
+  selected,
+  discoveredFields,
+  hintUsed,
+  reset
 };

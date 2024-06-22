@@ -6,17 +6,17 @@ import type { Writable } from 'svelte/store';
 export type Car = z.infer<typeof CarSchema>;
 
 export type SearchEntry = {
-	index: number;
-	label: string;
+  index: number;
+  label: string;
 };
 
 interface Reset {
-	reset: () => void;
+  reset: () => void;
 }
 
 interface Push<T> {
-	push: (val: T) => void;
+  push: (val: T) => void;
 }
 
-export interface Store<T> extends Writable<T>, Reset {}
-export interface ArrayStore<T> extends Store<T[]>, Push<T> {}
+export interface Store<T> extends Writable<T>, Reset { }
+export interface ArrayStore<T> extends Store<T[]>, Push<T> { }
