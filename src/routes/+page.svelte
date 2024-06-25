@@ -1,78 +1,94 @@
 <script lang="ts">
 	export let data;
 
-	import type { Car } from '$lib/types';
-	import { randomInteger, matchingFields } from '$lib/utils';
-
 	import Healthbar from './Healthbar.svelte';
 	import Controls from './Controls.svelte';
 	import GuessTable from './GuessTable.svelte';
 	import Search from './Search.svelte';
-	// import SummaryModal from './SummaryModal.svelte';
-
-	import gameData from './stores';
 	import Alert from './Alert.svelte';
 
-	const { guesses, guessesUsed, selected, discoveredFields, hintUsed } = gameData;
-	let answer: Car;
+	import { writable } from 'svelte/store';
+	import { onMount } from 'svelte';
 
-	function generateAnswer() {
-		const answerIndex = randomInteger(data.carlist.length);
-		answer = data.carlist[answerIndex];
-		console.log(answer.name);
-	}
+	import type { Car, SearchEntry } from '$lib/types';
+	import { matchingFields, getRandomItem, resettable, resettableArray } from '$lib/utils';
 
 	const hintThreshold = 7;
 	const maxGuesses = 10;
 
-	let alert: Alert;
+	let alertbox: Alert;
 	let search: Search;
 
-	function addGuess(guess: Partial<Car>) {
+	const answer = writable<Car | undefined>(undefined);
+	const guesses = resettableArray<Partial<Car>>([]);
+	const guessesUsed = resettable(0);
+	const selected = resettable<SearchEntry | undefined>(undefined);
+	const discoveredFields = resettableArray<keyof Car>(['name']);
+	const hintUsed = resettable(false);
+
+	function pushGuess(guess: Partial<Car>) {
 		if ($guesses.includes(guess)) {
-			alert.show('This car has already been guessed, choose a different car.');
-			return;
+			alertbox.show('This car has already been guessed, choose a different car.');
+		} else {
+			guesses.push(guess);
+			$guessesUsed += 1;
+		}
+	}
+
+	function getHint() {
+		if (typeof $answer === 'undefined') {
+			throw 'answer should not be undefined when this is called';
 		}
 
-		guesses.push(guess);
-		$guessesUsed += 1;
-	}
-
-	function giveHint() {
-		const hintableKeys = Object.keys(answer).filter(
-			(key) => !$discoveredFields.includes(key as keyof Car)
+		const undiscoveredfields = Object.keys($answer).filter(
+			(k) => !$discoveredFields.includes(k as keyof Car)
 		) as Array<keyof Car>;
-		const hintKey = hintableKeys[randomInteger(hintableKeys.length - 1)];
-		const hint = Object.fromEntries([[hintKey, answer[hintKey]]]);
-		addGuess(hint);
+		const hintField = getRandomItem(undiscoveredfields);
+		const hint = Object.fromEntries([[hintField, $answer[hintField]]]);
 
-		discoveredFields.push(hintKey);
-		$hintUsed = true;
+		discoveredFields.push(hintField);
+		hintUsed.set(true);
+		pushGuess(hint);
 	}
 
-	function guessCar() {
-		// this will never be called when `selected` is `null`
-		const guess = data.carlist[$selected?.index as number];
-		addGuess(guess);
+	function submitGuess() {
+		if (typeof $selected === 'undefined') {
+			throw 'this will never be called when selected is undefined';
+		}
 
-		for (const field of matchingFields(guess, answer)) {
+		const car = data.carlist[$selected.index];
+		pushGuess(car);
+		selected.set(undefined);
+
+		for (const field of matchingFields(car, answer)) {
 			discoveredFields.push(field as keyof Car);
 		}
+	}
 
-		$selected = null;
+	function reset() {
+		guesses.reset();
+		guessesUsed.reset();
+		selected.reset();
+		discoveredFields.reset();
+		hintUsed.reset();
+	}
+
+	function startNewGame() {
+		$answer = getRandomItem(data.carlist);
+		reset();
 	}
 
 	$: if ($guessesUsed === maxGuesses) {
-		alert?.show('you lose');
-		generateAnswer();
-		gameData.reset();
+		alertbox.show(`You lost! The car was a ${$answer?.year} ${$answer?.name}.`);
+		startNewGame();
 	}
 
-	$: if ($guesses.at(-1) === answer) {
-		alert?.show('you win');
-		generateAnswer();
-		gameData.reset();
+	$: if ($guesses.length > 0 && $guesses.at(-1) === $answer) {
+		alertbox.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
+		startNewGame();
 	}
+
+  onMount(() => startNewGame());
 </script>
 
 <div class="flex flex-col items-center gap-4 overflow-hidden">
@@ -80,16 +96,14 @@
 	<Controls
 		bind:selected={$selected}
 		onselect={() => search.show()}
-		onguess={guessCar}
-		onhint={giveHint}
+		onguess={submitGuess}
+		onhint={getHint}
 		hintCondition={() =>
 			!$hintUsed && $guessesUsed >= hintThreshold && $guessesUsed < maxGuesses - 1}
 	/>
 	<div class="w-full overflow-auto lg:w-1/2">
-		<GuessTable guesses={$guesses} {answer} />
+		<GuessTable guesses={$guesses} answer={$answer} />
 	</div>
 </div>
-
 <Search entries={data.names} bind:selected={$selected} bind:this={search} />
-<!-- <SummaryModal guessesMade={maxGuesses - $guessesLeft} /> -->
-<Alert bind:this={alert} />
+<Alert bind:this={alertbox} />

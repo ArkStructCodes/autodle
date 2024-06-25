@@ -1,8 +1,18 @@
 import { writable } from 'svelte/store';
-import type { ArrayStore, Store } from './types';
+import type { Resettable, ResettableArray } from './types';
 
-export function randomInteger(n: number): number {
+export function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw message || 'assertion failed';
+  }
+}
+
+function getRandomInteger(n: number): number {
   return Math.floor(Math.random() * (n + 1));
+}
+
+export function getRandomItem<T>(arr: T[]): T {
+  return arr[getRandomInteger(arr.length - 1)];
 }
 
 export function* matchingFields(obj1: object, obj2: object) {
@@ -15,26 +25,25 @@ export function* matchingFields(obj1: object, obj2: object) {
   }
 }
 
-export function createStore<T>(initial: T): Store<T> {
+export function resettable<T>(initial: T): Resettable<T> {
   const { subscribe, set, update } = writable(initial);
 
   return {
     subscribe,
     set,
     update,
-    reset: () => set(structuredClone(initial))
+    reset: () => set(structuredClone(initial)),
   };
 }
 
-export function createArrayStore<T>(initial: T[]): ArrayStore<T> {
-  const store = createStore(initial);
+export function resettableArray<T>(initial: T[]): ResettableArray<T> {
+  const store = resettable(initial);
 
   return {
     ...store,
-    push: (val: T) =>
-      store.update((arr) => {
-        arr.push(val);
-        return arr;
-      })
+    push: (val: T) => store.update((arr) => {
+      arr.push(val);
+      return arr;
+    }),
   };
 }

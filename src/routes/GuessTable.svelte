@@ -4,10 +4,10 @@
 	import { fade } from 'svelte/transition';
 
 	export let guesses: Array<Partial<Car>>;
-	export let answer: Car;
+	export let answer: Car | undefined;
 
 	/** Sets background color according to the relation between `lhs` and `rhs`. */
-	function matches(lhs: string, rhs: string | undefined): string {
+	function matches(lhs: string | undefined, rhs: string | undefined): string {
 		return lhs === rhs ? 'bg-success' : 'bg-error';
 	}
 
@@ -15,8 +15,12 @@
 	 * Sets background color according to the relation between `lhs` and `rhs`.
 	 * Adds directional pointer after content when `lhs` does not equal `rhs`.
 	 */
-	function within(lhs: number, rhs: number | undefined, range: number): string {
-		if (typeof rhs !== 'number') {
+	function within(
+    lhs: number | undefined,
+    rhs: number | undefined,
+    range: number
+  ): string {
+		if (typeof lhs === 'undefined' || typeof rhs === 'undefined') {
 			return 'bg-error';
 		}
 
@@ -58,12 +62,12 @@
 	<tbody class="font-bold text-neutral">
 		{#each guesses as car}
 			<tr in:fade={{ duration: 400 }}>
-				<td class={matches(answer.make, car?.make)}>{car?.make || ''}</td>
-				<td class={matches(answer.name, car?.name)}>{car?.name || ''}</td>
-				<td class={within(answer.year, car?.year, 5)}>{car?.year || ''}</td>
-				<td class={matches(answer.drivetrain, car?.drivetrain)}>{car?.drivetrain || ''}</td>
-				<td class={within(answer.power, car?.power, 25)}>{car?.power || ''}</td>
-				<td class={within(answer.weight, car?.weight, 100)}>{car?.weight || ''}</td>
+				<td class={matches(answer?.make, car?.make)}>{car?.make || ''}</td>
+				<td class={matches(answer?.name, car?.name)}>{car?.name || ''}</td>
+				<td class={within(answer?.year, car?.year, 5)}>{car?.year || ''}</td>
+				<td class={matches(answer?.drivetrain, car?.drivetrain)}>{car?.drivetrain || ''}</td>
+				<td class={within(answer?.power, car?.power, 25)}>{car?.power || ''}</td>
+				<td class={within(answer?.weight, car?.weight, 100)}>{car?.weight || ''}</td>
 			</tr>
 		{/each}
 	</tbody>

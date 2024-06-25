@@ -4,7 +4,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	export let entries: SearchEntry[];
-	export let selected: SearchEntry | null = null;
+	export let selected: SearchEntry | undefined = undefined;
 
 	let input = '';
 	let modal: HTMLDialogElement;

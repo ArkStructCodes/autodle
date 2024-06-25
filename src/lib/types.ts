@@ -18,5 +18,5 @@ interface Push<T> {
   push: (val: T) => void;
 }
 
-export interface Store<T> extends Writable<T>, Reset { }
-export interface ArrayStore<T> extends Store<T[]>, Push<T> { }
+export interface Resettable<T> extends Writable<T>, Reset { }
+export interface ResettableArray<T> extends Resettable<T[]>, Push<T> { }
