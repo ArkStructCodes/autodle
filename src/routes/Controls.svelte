@@ -11,7 +11,7 @@
 <div class="join flex justify-center">
 	<button on:click={onselect} class="btn join-item w-48">
 		<span class="truncate">
-			{selected ? selected.label : 'Select car'}
+			{selected ? selected.label : 'Select Car'}
 		</span>
 	</button>
 	<button on:click={onguess} disabled={!selected} class="btn btn-primary join-item">Guess</button>

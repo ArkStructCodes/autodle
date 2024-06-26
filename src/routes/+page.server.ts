@@ -1,6 +1,7 @@
-import type { LoadEvent } from '@sveltejs/kit';
 import { CarlistSchema } from '$lib/schema';
 import type { SearchEntry } from '$lib/types';
+
+import type { LoadEvent } from '@sveltejs/kit';
 
 export async function load({ fetch }: LoadEvent) {
 	const data = await fetch('/data.json');

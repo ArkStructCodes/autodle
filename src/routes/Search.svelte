@@ -47,9 +47,7 @@
 					<button on:click={() => handleSelection(entry)}>{entry.label}</button>
 				</li>
 			{:else}
-				<span class="py-4 text-neutral-content text-lg text-center">
-					<p>No matches found</p>
-				</span>
+				<li class="py-4 text-neutral-content text-lg text-center">No matches found</li>
 			{/each}
 		</ul>
 	</div>
