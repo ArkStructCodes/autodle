@@ -5,6 +5,21 @@
 	let help: Help;
 </script>
 
+<svelte:head>
+	<title>Autodle - Guess The Car</title>
+	<meta
+		name="description"
+		content="A fun little puzzle game where you must guess the car by its stats."
+	/>
+	<meta property="og:title" content="We're Car Guys, Of Course We Guess" />
+	<meta
+		property="og:description"
+		content="Autodle is u fun little puzzle game where you must guess the car by its stats."
+	/>
+  <meta property="og:site_name" content="Autodle">
+	<meta property="og:url" content="https://autodle.vercel.app" />
+</svelte:head>
+
 <div class="flex h-dvh flex-col">
 	<header class="navbar bg-base-100 px-4">
 		<div class="navbar-start"></div>
@@ -17,4 +32,5 @@
 	</header>
 	<slot />
 </div>
+
 <Help bind:this={help} />

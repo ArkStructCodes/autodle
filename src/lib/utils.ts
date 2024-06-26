@@ -1,12 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Resettable, ResettableArray } from './types';
 
-export function assert(condition: boolean, message: string) {
-  if (!condition) {
-    throw message || 'assertion failed';
-  }
-}
-
 function getRandomInteger(n: number): number {
   return Math.floor(Math.random() * (n + 1));
 }

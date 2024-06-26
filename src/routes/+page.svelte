@@ -105,5 +105,6 @@
 		<GuessTable guesses={$guesses} answer={$answer} />
 	</div>
 </div>
+
 <Search entries={data.names} bind:selected={$selected} bind:this={search} />
 <Alert bind:this={alertbox} />
