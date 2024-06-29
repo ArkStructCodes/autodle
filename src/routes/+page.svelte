@@ -21,9 +21,9 @@
 
 	const answer = writable<Car | undefined>(undefined);
 	const guesses = resettableArray<Partial<Car>>([]);
-	const guessesUsed = resettable(0);
+  const guessesUsed = resettable(0);
 	const selected = resettable<SearchEntry | undefined>(undefined);
-	const discoveredFields = resettableArray<keyof Car>(['name']);
+	const discoveredFields = resettableArray(['name']);
 	const hintUsed = resettable(false);
 
 	function pushGuess(guess: Partial<Car>) {
@@ -41,14 +41,14 @@
 		}
 
 		const undiscoveredfields = Object.keys($answer).filter(
-			(k) => !$discoveredFields.includes(k as keyof Car)
+			(field) => !$discoveredFields.includes(field)
 		) as Array<keyof Car>;
 		const hintField = getRandomItem(undiscoveredfields);
 		const hint = Object.fromEntries([[hintField, $answer[hintField]]]);
 
 		discoveredFields.push(hintField);
-		hintUsed.set(true);
 		pushGuess(hint);
+		$hintUsed = true;
 	}
 
 	function submitGuess() {
@@ -58,10 +58,12 @@
 
 		const car = data.carlist[$selected.index];
 		pushGuess(car);
-		selected.set(undefined);
+		$selected = undefined;
 
-		for (const field of matchingFields(car, answer)) {
-			discoveredFields.push(field as keyof Car);
+		for (const field of matchingFields(car, $answer)) {
+			if (!$discoveredFields.includes(field)) {
+				discoveredFields.push(field);
+			}
 		}
 	}
 
@@ -88,7 +90,7 @@
 		startNewGame();
 	}
 
-  onMount(() => startNewGame());
+	onMount(() => startNewGame());
 </script>
 
 <div class="flex flex-col items-center gap-4 overflow-hidden">

@@ -9,7 +9,7 @@ export function getRandomItem<T>(arr: T[]): T {
   return arr[getRandomInteger(arr.length - 1)];
 }
 
-export function* matchingFields(obj1: object, obj2: object) {
+export function* matchingFields(obj1: any, obj2: any) {
   for (const [k1, v1] of Object.entries(obj1)) {
     for (const [k2, v2] of Object.entries(obj2)) {
       if (k1 === k2 && v1 === v2) {
@@ -35,8 +35,8 @@ export function resettableArray<T>(initial: T[]): ResettableArray<T> {
 
   return {
     ...store,
-    push: (val: T) => store.update((arr) => {
-      arr.push(val);
+    push: (value: T) => store.update((arr) => {
+      arr.push(value);
       return arr;
     }),
   };

@@ -15,7 +15,7 @@ interface Reset {
 }
 
 interface Push<T> {
-  push: (val: T) => void;
+  push: (value: T) => void;
 }
 
 export interface Resettable<T> extends Writable<T>, Reset { }
