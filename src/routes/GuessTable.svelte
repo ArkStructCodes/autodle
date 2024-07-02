@@ -51,6 +51,7 @@
 <table class="table table-pin-rows table-lg">
 	<thead>
 		<tr>
+			<td>Country</td>
 			<td>Make</td>
 			<td>Name</td>
 			<td>Year</td>
@@ -62,6 +63,7 @@
 	<tbody class="font-bold text-neutral">
 		{#each guesses as car}
 			<tr in:fade={{ duration: 400 }}>
+				<td class={matches(answer?.country, car?.country)}>{car?.country || ''}</td>
 				<td class={matches(answer?.make, car?.make)}>{car?.make || ''}</td>
 				<td class={matches(answer?.name, car?.name)}>{car?.name || ''}</td>
 				<td class={within(answer?.year, car?.year, 5)}>{car?.year || ''}</td>
