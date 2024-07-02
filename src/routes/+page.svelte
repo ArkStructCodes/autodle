@@ -1,11 +1,12 @@
 <script lang="ts">
 	export let data;
 
+	import Alert from '$lib/components/Alert.svelte';
+	import Prompt from '$lib/components/Prompt.svelte';
 	import Healthbar from './Healthbar.svelte';
 	import Controls from './Controls.svelte';
 	import GuessTable from './GuessTable.svelte';
 	import Search from './Search.svelte';
-	import Alert from './Alert.svelte';
 
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -17,6 +18,7 @@
 	const maxGuesses = 10;
 
 	let alertbox: Alert;
+  let prompt: Prompt;
 	let search: Search;
 
 	const answer = writable<Car | undefined>(undefined);
@@ -99,14 +101,15 @@
 		bind:selected={$selected}
 		onselect={() => search.show()}
 		onguess={submitGuess}
-		onhint={getHint}
+		onhint={() => prompt.show('Do you want to use the hint? This will cost 1 guess.')}
 		hintCondition={() =>
 			!$hintUsed && $guessesUsed >= hintThreshold && $guessesUsed < maxGuesses - 1}
 	/>
-	<div class="w-full overflow-auto lg:w-1/2">
+	<div class="w-full overflow-auto xl:w-2/3">
 		<GuessTable guesses={$guesses} answer={$answer} />
 	</div>
 </div>
 
 <Search entries={data.names} bind:selected={$selected} bind:this={search} />
 <Alert bind:this={alertbox} />
+<Prompt bind:this={prompt} callback={getHint} />

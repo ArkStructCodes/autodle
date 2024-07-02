@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let modal: HTMLDialogElement;
 	export let id: string;
-	export let centered: boolean;
+	export let centered = true;
 </script>
 
 <dialog {id} class={`modal ${centered ? 'modal-middle' : 'modal-top'}`} on:close bind:this={modal}>
