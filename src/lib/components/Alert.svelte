@@ -10,7 +10,7 @@
 	}
 </script>
 
-<Modal bind:modal id="alert" centered={true}>
+<Modal bind:modal id="alert">
 	<p>{alertMessage}</p>
 	<button class="btn" slot="action">Okay</button>
 </Modal>

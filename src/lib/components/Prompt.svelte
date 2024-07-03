@@ -12,7 +12,7 @@
 	}
 </script>
 
-<Modal bind:modal id="alert" centered={true}>
+<Modal bind:modal id="alert">
 	<p>{alertMessage}</p>
 	<div class="space-x-2" slot="action">
 		<button on:click={callback} class="btn btn-primary">Yes</button>
