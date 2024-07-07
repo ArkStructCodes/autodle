@@ -5,7 +5,7 @@
 	import Swatch from '$lib/icons/Swatch.svelte';
 
 	const themes = ['default', 'light', 'dark'];
-	let settings = persisted('settings', { theme: themes[0] });
+	const settings = persisted('settings', { theme: themes[0] });
 
 	let form: HTMLFormElement;
 

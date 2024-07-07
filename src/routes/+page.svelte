@@ -88,7 +88,7 @@
 		startNewGame();
 	}
 
-	// loss condition
+	// win condition
 	$: if ($guesses.at(-1) === $answer && $guesses.length > 0) {
 		alert.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
 		startNewGame();
