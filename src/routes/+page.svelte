@@ -1,12 +1,12 @@
 <script lang="ts">
 	export let data;
 
-	import Alert from '$lib/components/Alert.svelte';
-	import Prompt from '$lib/components/Prompt.svelte';
+	import AlertModal from '$lib/components/AlertModal.svelte';
+	import PromptModal from '$lib/components/PromptModal.svelte';
+	import SearchModal from './SearchModal.svelte';
 	import Healthbar from './Healthbar.svelte';
 	import Controls from './Controls.svelte';
 	import GuessTable from './GuessTable.svelte';
-	import Search from './Search.svelte';
 
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -17,20 +17,20 @@
 	const hintThreshold = 7;
 	const maxGuesses = 10;
 
-	let alertbox: Alert;
-  let prompt: Prompt;
-	let search: Search;
+	let alert: AlertModal;
+	let prompt: PromptModal;
+	let search: SearchModal;
 
 	const answer = writable<Car | undefined>(undefined);
 	const guesses = resettableArray<Partial<Car>>([]);
-  const guessesUsed = resettable(0);
+	const guessesUsed = resettable(0);
 	const selected = resettable<SearchEntry | undefined>(undefined);
 	const discoveredFields = resettableArray(['name']);
 	const hintUsed = resettable(false);
 
 	function pushGuess(guess: Partial<Car>) {
 		if ($guesses.includes(guess)) {
-			alertbox.show('This car has already been guessed, choose a different car.');
+			alert.show('This car has already been guessed, choose a different car.');
 		} else {
 			guesses.push(guess);
 			$guessesUsed += 1;
@@ -82,13 +82,15 @@
 		reset();
 	}
 
-	$: if ($guessesUsed === maxGuesses) {
-		alertbox.show(`You lost! The car was a ${$answer?.year} ${$answer?.name}.`);
+	// loss condition
+	$: if ($guesses.at(-1) !== $answer && $guessesUsed === maxGuesses) {
+		alert.show(`You lost! The car was a ${$answer?.year} ${$answer?.name}.`);
 		startNewGame();
 	}
 
-	$: if ($guesses.length > 0 && $guesses.at(-1) === $answer) {
-		alertbox.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
+	// loss condition
+	$: if ($guesses.at(-1) === $answer && $guesses.length > 0) {
+		alert.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
 		startNewGame();
 	}
 
@@ -110,6 +112,6 @@
 	</div>
 </div>
 
-<Search entries={data.names} bind:selected={$selected} bind:this={search} />
-<Alert bind:this={alertbox} />
-<Prompt bind:this={prompt} callback={getHint} />
+<SearchModal entries={data.names} bind:selected={$selected} bind:this={search} />
+<AlertModal bind:this={alert} />
+<PromptModal bind:this={prompt} callback={getHint} />
