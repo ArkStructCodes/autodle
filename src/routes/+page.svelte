@@ -91,7 +91,7 @@
 
 	// win condition
 	$: if ($guesses.at(-1) === $answer && $guesses.length > 0) {
-		confetti({ particleCount: 300, spread: 85 });
+		confetti({ particleCount: 150, spread: 135 });
 		alert.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
 		startNewGame();
 	}
