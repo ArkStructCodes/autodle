@@ -1,5 +1,5 @@
 <div class="dropdown" {...$$props}>
-	<div tabindex="0" role="button" class="flex flex-nowrap btn btn-ghost btn-square">
+	<div tabindex="0" role="button" class="btn btn-square btn-ghost flex flex-nowrap">
 		<slot name="label" />
 		<!-- indicator chevron -->
 		<svg

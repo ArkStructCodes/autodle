@@ -8,7 +8,7 @@
 	import Controls from './Controls.svelte';
 	import GuessTable from './GuessTable.svelte';
 
-  import confetti from 'canvas-confetti';
+	import confetti from 'canvas-confetti';
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 
@@ -91,7 +91,7 @@
 
 	// win condition
 	$: if ($guesses.at(-1) === $answer && $guesses.length > 0) {
-    confetti({ particleCount: 300, spread: 85 });
+		confetti({ particleCount: 300, spread: 85 });
 		alert.show(`You guessed the right car! It took you ${$guessesUsed} attempts.`);
 		startNewGame();
 	}
