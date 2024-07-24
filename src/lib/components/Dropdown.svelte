@@ -1,9 +1,9 @@
 <div class="dropdown" {...$$props}>
-	<div tabindex="0" role="button" class="btn btn-ghost">
+	<div tabindex="0" role="button" class="flex flex-nowrap btn btn-ghost btn-square">
 		<slot name="label" />
 		<!-- indicator chevron -->
 		<svg
-			class="inline-block size-2 fill-current opacity-60"
+			class="size-2 fill-current opacity-60"
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 2048 2048"
 		>

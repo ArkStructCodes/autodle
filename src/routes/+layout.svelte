@@ -31,7 +31,7 @@
 		</div>
 		<div class="navbar-end">
 			<ThemeController />
-			<button on:click={help.show} class="btn btn-ghost" title="Help">
+			<button on:click={help.show} class="btn btn-ghost btn-square" title="Help">
 				<Help class="size-5" />
 			</button>
 		</div>
