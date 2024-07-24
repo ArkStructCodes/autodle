@@ -29,10 +29,11 @@
 
 		for (let i = 0; i < order?.length!; i++) {
 			const infoIdx = order![i];
-			const entry = entries[info?.idx[infoIdx]!];
+			const entryIdx = info?.idx[infoIdx]!;
+			const entry = entries[entryIdx];
 
 			yield {
-				index: infoIdx,
+				index: entryIdx,
 				label: entry,
 				html: uFuzzy.highlight(entry, info?.ranges[infoIdx]!, markAsBold)
 			};
