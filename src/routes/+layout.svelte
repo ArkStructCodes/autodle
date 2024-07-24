@@ -21,6 +21,7 @@
 	/>
 	<meta property="og:site_name" content="Autodle" />
 	<meta property="og:url" content="https://autodle.vercel.app" />
+	<meta name="google-site-verification" content="fu5BIcy58sYvplz65BT-BKuzI3_HtPs9YmDMXjZ9mck" />
 </svelte:head>
 
 <div class="flex h-dvh flex-col">
@@ -31,7 +32,7 @@
 		</div>
 		<div class="navbar-end">
 			<ThemeController />
-			<button on:click={help.show} class="btn btn-ghost btn-square" title="Help">
+			<button on:click={help.show} class="btn btn-square btn-ghost" title="Help">
 				<Help class="size-5" />
 			</button>
 		</div>
