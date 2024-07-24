@@ -8,6 +8,7 @@ export type Car = z.infer<typeof CarSchema>;
 export type SearchEntry = {
   index: number;
   label: string;
+  [x: string]: unknown;
 };
 
 interface Reset {
