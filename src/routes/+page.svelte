@@ -1,6 +1,9 @@
 <script lang="ts">
 	export let data;
 
+	import type { Car } from '$lib/types';
+	import { matchingFields, getRandomItem } from '$lib/utils';
+
 	import AlertModal from '$lib/components/AlertModal.svelte';
 	import PromptModal from '$lib/components/PromptModal.svelte';
 	import SearchModal from './SearchModal.svelte';
@@ -8,12 +11,18 @@
 	import Controls from './Controls.svelte';
 	import GuessTable from './GuessTable.svelte';
 
-	import confetti from 'canvas-confetti';
-	import { writable } from 'svelte/store';
-	import { onMount } from 'svelte';
+	import {
+		answer,
+		selected,
+		guesses,
+		guessesUsed,
+		discoveredFields,
+		hintUsed,
+		resetStores
+	} from './stores';
 
-	import type { Car, SearchEntry } from '$lib/types';
-	import { matchingFields, getRandomItem, resettable, resettableArray } from '$lib/utils';
+	import confetti from 'canvas-confetti';
+	import { onMount } from 'svelte';
 
 	const hintThreshold = 7;
 	const maxGuesses = 10;
@@ -21,13 +30,6 @@
 	let alert: AlertModal;
 	let prompt: PromptModal;
 	let search: SearchModal;
-
-	const answer = writable<Car | undefined>(undefined);
-	const guesses = resettableArray<Partial<Car>>([]);
-	const guessesUsed = resettable(0);
-	const selected = resettable<SearchEntry | undefined>(undefined);
-	const discoveredFields = resettableArray(['name']);
-	const hintUsed = resettable(false);
 
 	function pushGuess(guess: Partial<Car>) {
 		if ($guesses.includes(guess)) {
@@ -39,9 +41,7 @@
 	}
 
 	function getHint() {
-		if (typeof $answer === 'undefined') {
-			throw 'answer should not be undefined when this is called';
-		}
+		if (typeof $answer === 'undefined') throw 'answer is undefined';
 
 		const undiscoveredfields = Object.keys($answer).filter(
 			(field) => !$discoveredFields.includes(field)
@@ -55,13 +55,11 @@
 	}
 
 	function submitGuess() {
-		if (typeof $selected === 'undefined') {
-			throw 'this will never be called when selected is undefined';
-		}
+		if (typeof $selected === 'undefined') throw 'selected is undefined';
 
 		const car = data.carlist[$selected.index];
 		pushGuess(car);
-		$selected = undefined;
+		selected.reset();
 
 		for (const field of matchingFields(car, $answer)) {
 			if (!$discoveredFields.includes(field)) {
@@ -70,17 +68,9 @@
 		}
 	}
 
-	function reset() {
-		guesses.reset();
-		guessesUsed.reset();
-		selected.reset();
-		discoveredFields.reset();
-		hintUsed.reset();
-	}
-
 	function startNewGame() {
 		$answer = getRandomItem(data.carlist);
-		reset();
+		resetStores();
 	}
 
 	// loss condition
@@ -107,6 +97,8 @@
 		onguess={submitGuess}
 		onhint={() => prompt.show('Do you want to use the hint? This will cost 1 guess.')}
 		hintCondition={() =>
+			// hint is activated when the amount of guesses reaches the threshold
+			// disables when only 1 guess is remaining
 			!$hintUsed && $guessesUsed >= hintThreshold && $guessesUsed < maxGuesses - 1}
 	/>
 	<div class="w-full overflow-auto xl:w-2/3">
@@ -114,6 +106,6 @@
 	</div>
 </div>
 
-<SearchModal entries={data.names} bind:selected={$selected} bind:this={search} />
+<SearchModal bind:this={search} entries={data.names} bind:selected={$selected} />
 <AlertModal bind:this={alert} />
 <PromptModal bind:this={prompt} callback={getHint} />

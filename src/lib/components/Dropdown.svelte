@@ -12,6 +12,7 @@
 	</div>
 	<!-- svelte-ignore a11y-positive-tabindex a11y-no-noninteractive-tabindex -->
 	<ul tabindex="1" class="dropdown-content z-[2] rounded-box bg-base-300 p-2 shadow-xl">
+		<!-- children must be contained within `li` -->
 		<slot name="item-list" />
 	</ul>
 </div>
