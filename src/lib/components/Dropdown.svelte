@@ -1,5 +1,19 @@
-<div class="dropdown" {...$$props}>
-	<div tabindex="0" role="button" class="btn btn-square btn-ghost flex flex-nowrap">
+<script lang="ts">
+	let timer: number | undefined;
+	let open: boolean;
+
+	function closeWithin(timeout: number) {
+		clearTimeout(timer);
+		timer = setTimeout(() => (open = false), timeout);
+	}
+
+	$: if (open) {
+		closeWithin(2000);
+	}
+</script>
+
+<details bind:open class="dropdown" {...$$props}>
+	<summary class="btn btn-square btn-ghost flex flex-nowrap">
 		<slot name="label" />
 		<!-- indicator chevron -->
 		<svg
@@ -9,10 +23,14 @@
 		>
 			<path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
 		</svg>
-	</div>
-	<!-- svelte-ignore a11y-positive-tabindex a11y-no-noninteractive-tabindex -->
-	<ul tabindex="1" class="dropdown-content z-[2] rounded-box bg-base-300 p-2 shadow-xl">
+	</summary>
+
+	<ul
+		on:mouseenter={() => clearTimeout(timer)}
+		on:mouseleave={() => closeWithin(1000)}
+		class="menu dropdown-content z-[2] rounded-box bg-base-300 p-2 shadow-xl"
+	>
 		<!-- children must be contained within `li` -->
 		<slot name="item-list" />
 	</ul>
-</div>
+</details>

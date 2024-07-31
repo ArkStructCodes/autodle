@@ -15,7 +15,11 @@
 		}
 
 		const data = new FormData(form);
-		$settings.theme = data.get('theme-dropdown')?.toString()!;
+    const theme = data.get('theme-dropdown');
+
+    if (theme !== null) {
+      $settings.theme = theme.toString();
+    }
 	}
 </script>
 
