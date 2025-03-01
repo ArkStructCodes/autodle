@@ -1,14 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
 @layer utilities {
-	.wrapper {
-		@apply flex flex-col items-center justify-center;
-	}
-}
-
-/* temporary fix for modal scrollbars */
-html {
-	scrollbar-gutter: auto !important;
+  .scroll-indicator {
+    background:
+      linear-gradient(var(--color-base-100) 33%, transparent),
+      linear-gradient(transparent, var(--color-base-100) 66%) 0 100%,
+      radial-gradient(farthest-side at 50% 0, var(--color-base-300), transparent),
+      radial-gradient(farthest-side at 50% 100%, var(--color-base-300), transparent) 0
+        100%;
+    background-color: var(--color-base-100);
+    background-repeat: no-repeat;
+    background-attachment: local, local, scroll, scroll;
+    background-size:
+      100% 30px,
+      100% 30px,
+      100% 10px,
+      100% 10px;
+  }
 }

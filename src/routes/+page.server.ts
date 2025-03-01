@@ -1,16 +1,18 @@
-import { CarlistSchema } from '$lib/schema';
-import type { SearchEntry } from '$lib/types';
+import { cars, state } from "$lib/server";
 
-import type { LoadEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from "./$types";
 
-export async function load({ fetch }: LoadEvent) {
-  const data = await fetch('/data.json');
-  const carlist = await data.json() as any[];
+const DAY = 24 * 60 * 60 * 1000;
 
-  // TODO: error handling
-  CarlistSchema.parse(carlist);
-
-  const names = carlist.map(car => `${car.year} ${car.name}`);
-
-  return { carlist, names };
-}
+export const load: PageServerLoad = () => {
+  return {
+    nextUpdateAt: state.updatedAt + DAY,
+    searchItems: cars.map(car => `${car.year} ${car.name}`),
+    gameParams: {
+      cars,
+      answer: state.answer,
+      guessLimit: 10,
+      hintThreshold: 3,
+    },
+  };
+};
