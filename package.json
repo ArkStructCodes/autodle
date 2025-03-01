@@ -13,7 +13,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^4.0.0",
+    "@sveltejs/adapter-vercel": "^5.6.3",
     "@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
@@ -37,6 +37,7 @@
   "dependencies": {
     "@leeoniya/ufuzzy": "^1.0.18",
     "@sinclair/typebox": "^0.34.14",
+    "@vercel/analytics": "^1.5.0",
     "canvas-confetti": "^1.9.3",
     "object-hash": "^3.0.0"
   }
