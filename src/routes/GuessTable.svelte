@@ -1,76 +1,62 @@
 <script lang="ts">
-	import type { Car } from '$lib/types';
+  import { fly } from "svelte/transition";
 
-	import { fade } from 'svelte/transition';
+  import type { Car } from "$lib/schema";
 
-	export let guesses: Array<Partial<Car>>;
-	export let answer: Car | undefined;
+  interface Props {
+    answer: Car;
+    guesses: Partial<Car>[];
+  }
 
-	/** Sets background color according to the relation between `lhs` and `rhs`. */
-	function matches(lhs: string | undefined, rhs: string | undefined): string {
-		return lhs === rhs ? 'bg-success' : 'bg-error';
-	}
-
-	/**
-	 * Sets background color according to the relation between `lhs` and `rhs`.
-	 * Adds directional pointer after content when `lhs` does not equal `rhs`.
-	 */
-	function within(
-    lhs: number | undefined,
-    rhs: number | undefined,
-    range: number
-  ): string {
-		if (typeof lhs === 'undefined' || typeof rhs === 'undefined') {
-			return 'bg-error';
-		}
-
-		const classes = [];
-
-		if (lhs == rhs) {
-			classes.push('bg-success');
-		} else {
-			if (Math.abs(lhs - rhs) <= range) {
-				classes.push('bg-warning');
-			} else {
-				classes.push('bg-error');
-			}
-
-			if (lhs > rhs) {
-				classes.push('after:content-["▲"]');
-			} else {
-				classes.push('after:content-["▼"]');
-			}
-
-			classes.push('after:px-2');
-		}
-
-		return classes.join(' ');
-	}
+  let { answer, guesses }: Props = $props();
 </script>
 
-<table class="table table-pin-rows table-lg">
-	<thead>
-		<tr>
-			<td>Country</td>
-			<td>Make</td>
-			<td>Name</td>
-			<td>Year</td>
-			<td>Drivetrain</td>
-			<td>Power (kW)</td>
-			<td>Weight (kg)</td>
-		</tr>
-	</thead>
-	<tbody class="font-bold text-neutral">
-		{#each guesses as car}
-			<tr in:fade={{ duration: 400 }}>
-				<td class={matches(answer?.country, car?.country)}>{car?.country || ''}</td>
-				<td class={matches(answer?.make, car?.make)}>{car?.make || ''}</td>
-				<td class={matches(answer?.name, car?.name)}>{car?.name || ''}</td>
-				<td class={within(answer?.year, car?.year, 5)}>{car?.year || ''}</td>
-				<td class={matches(answer?.drivetrain, car?.drivetrain)}>{car?.drivetrain || ''}</td>
-				<td class={within(answer?.power, car?.power, 25)}>{car?.power || ''}</td>
-				<td class={within(answer?.weight, car?.weight, 100)}>{car?.weight || ''}</td>
-			</tr>
-		{/each}
-	</tbody>
+{#snippet textComparison(original: string, value: any)}
+  {@const isEqual = original === value}
+  <td class:bg-rose-500={!isEqual} class:bg-emerald-500={isEqual}>
+    {value || ""}
+  </td>
+{/snippet}
+
+{#snippet numberComparison(original: number, value: any, range: number)}
+  {@const gap = original - value}
+  <td
+    class:bg-rose-500={isNaN(gap) || Math.abs(gap) > range}
+    class:bg-amber-500={gap !== 0 && Math.abs(gap) <= range}
+    class:bg-emerald-500={gap === 0}
+  >
+    <span class="flex justify-center gap-2">
+      <span>{value ?? ""}</span>
+      {#if !isNaN(gap)}
+        <span>{gap === 0 ? "" : gap > 0 ? "▲" : "▼"}</span>
+      {/if}
+    </span>
+  </td>
+{/snippet}
+
+<table class="table-pin-rows table-lg table w-full">
+  <thead>
+    <tr>
+      <th class="min-w-36">Country</th>
+      <th class="min-w-36">Make</th>
+      <th class="w-[16ch]">Year</th>
+      <th class="min-w-60">Name</th>
+      <th class="w-[16ch]">Drivetrain</th>
+      <th class="w-[16ch]">Power (kW)</th>
+      <th class="w-[16ch]">Weight (kg)</th>
+    </tr>
+  </thead>
+  <tbody class="text-neutral font-bold">
+    {#each guesses as guess}
+      <tr in:fly={{ delay: 150, y: "-100%" }}>
+        {@render textComparison(answer.country, guess.country)}
+        {@render textComparison(answer.make, guess.make)}
+        {@render numberComparison(answer.year, guess.year, 5)}
+        {@render textComparison(answer.name, guess.name)}
+        {@render textComparison(answer.drivetrain, guess.drivetrain)}
+        {@render numberComparison(answer.power, guess.power, 50)}
+        {@render numberComparison(answer.weight, guess.weight, 200)}
+      </tr>
+    {/each}
+  </tbody>
 </table>

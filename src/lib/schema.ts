@@ -1,13 +1,23 @@
-import { z } from 'zod';
+import {
+  Array,
+  Literal,
+  Integer,
+  Object,
+  String,
+  Union,
+  type Static,
+} from "@sinclair/typebox";
 
-export const CarSchema = z.object({
-  country: z.string(),
-  make: z.string(),
-  year: z.number(),
-  name: z.string(),
-  drivetrain: z.string(),
-  power: z.number(),
-  weight: z.number()
+const carSchema = Object({
+  country: String(),
+  make: String(),
+  year: Integer(),
+  name: String(),
+  drivetrain: Union([Literal("FWD"), Literal("RWD"), Literal("AWD")]),
+  power: Integer(),
+  weight: Integer(),
 });
 
-export const CarlistSchema = z.array(CarSchema);
+export type Car = Static<typeof carSchema>;
+
+export const carsSchema = Array(carSchema);
