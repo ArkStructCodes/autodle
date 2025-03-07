@@ -1,4 +1,3 @@
-import hash from "object-hash";
 import { writable } from "svelte/store";
 import type { Readable, Subscriber, Unsubscriber, Writable } from "svelte/store";
 
@@ -14,7 +13,6 @@ import { GameError } from "./error";
  * Immutable representation of the game state. Can be safely serialized.
  */
 export interface GameSnapshot {
-  session: string;
   guesses: Partial<Car>[];
   guessesRemaining: number;
   unrevealedKeys: HintKey[];
@@ -23,9 +21,10 @@ export interface GameSnapshot {
   status: GameStatus;
 }
 
-/** Manages a game session. */
+/**
+ * Interface to the game session.
+ */
 export class Game implements Readable<GameSnapshot> {
-  private session: string;
   private state: GameState;
   private snapshot: Writable<GameSnapshot>;
 
@@ -34,7 +33,6 @@ export class Game implements Readable<GameSnapshot> {
    * @param - Parameters for the session.
    */
   constructor(params: GameParams) {
-    this.session = hash(params);
     this.state = new GameState(params);
     this.snapshot = writable(this.dump());
   }
@@ -44,9 +42,6 @@ export class Game implements Readable<GameSnapshot> {
    * @param snapshot - The snapshot to restore.
    */
   load(snapshot: GameSnapshot): void {
-    if (this.session !== snapshot.session) {
-      throw new GameError("SessionMismatch");
-    }
     this.state.guesses = snapshot.guesses;
     this.state.guessesUsed = snapshot.guesses.length;
     this.state.unrevealedKeys = new Set(snapshot.unrevealedKeys);
@@ -60,7 +55,6 @@ export class Game implements Readable<GameSnapshot> {
    */
   dump(): GameSnapshot {
     return {
-      session: this.session,
       guesses: this.state.guesses,
       guessesRemaining: this.state.guessesRemaining,
       unrevealedKeys: Array.from(this.state.unrevealedKeys),

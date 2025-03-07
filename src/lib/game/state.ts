@@ -1,4 +1,4 @@
-import hash from "object-hash";
+import { isEqual } from "ohash";
 
 import { assert, assertNonNullish } from "$lib/utils";
 import type { Car } from "$lib/schema";
@@ -69,7 +69,7 @@ export class GameState {
     // check for the win condition first
     // this lets the game to be won on the last remaining guess
     const lastGuess = this.guesses.at(-1);
-    if (lastGuess && hash(lastGuess) === hash(this.params.answer)) {
+    if (lastGuess && isEqual(lastGuess, this.params.answer)) {
       return "won";
     }
 
