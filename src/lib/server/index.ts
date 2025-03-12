@@ -1,32 +1,42 @@
+import { hash } from "ohash";
+import { createClient, type SetOptions } from "@redis/client";
 import { Value } from "@sinclair/typebox/value";
 
 import { carsSchema, type Car } from "$lib/schema";
-import { pickRandomItem } from "$lib/utils";
+import { assert, randomInteger } from "$lib/utils";
 
 import data from "./data.json";
 
-class State {
-  private car: Car;
-  private timestamp: number;
+const redis = await createClient({ url: process.env.REDIS_URL }).connect();
 
-  constructor(cars: Car[]) {
-    this.car = pickRandomItem(cars);
-    this.timestamp = Date.now();
-  }
+export let gameParams: {
+  cars: Car[];
+  answer: Car;
+  guessLimit: number;
+  hintThreshold: number;
+};
+export let session: string;
+export let updatedAt: number;
 
-  get answer(): Car {
-    return this.car;
-  }
+export async function setGameParams(setOptions?: SetOptions): Promise<void> {
+  const cars = Value.Parse(carsSchema, data);
 
-  get updatedAt(): number {
-    return this.timestamp;
-  }
+  await redis.set("answerIndex", randomInteger(cars.length), setOptions);
+  await redis.set("updatedAt", Date.now(), setOptions);
 
-  updateAnswer(): void {
-    this.car = pickRandomItem(cars);
-    this.timestamp = Date.now();
-  }
+  const answerIndex = parseInt(await redis.get("answerIndex") as any);
+  assert(!isNaN(answerIndex));
+
+  updatedAt = parseInt(await redis.get("updatedAt") as any);
+  assert(!isNaN(updatedAt));
+
+  gameParams = {
+    cars,
+    answer: cars[answerIndex],
+    guessLimit: 10,
+    hintThreshold: 3,
+  };
+  session = hash(gameParams);
 }
 
-export const cars = Value.Parse(carsSchema, data);
-export const state = new State(cars);
+await setGameParams({ NX: true });

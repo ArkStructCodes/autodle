@@ -17,8 +17,13 @@
   import GameSummary from "./GameSummary.svelte";
   import type { PageProps } from "./$types";
 
+  interface SaveData {
+    session: string;
+    snapshot: GameSnapshot;
+  }
+
   let { data }: PageProps = $props();
-  const { nextUpdateAt, searchItems, gameParams } = data;
+  const { gameParams, session, nextUpdateAt, searchItems } = data;
 
   const game = new Game(gameParams);
   let selected: SearchResult | undefined = $state();
@@ -44,23 +49,11 @@
     fireConfetti(0.1, { spread: 120, startVelocity: 30, decay: 0.9, scalar: 1.2 });
     fireConfetti(0.1, { spread: 120, startVelocity: 45 });
   }
-
-  function tryLoadSnapshot(snapshot: GameSnapshot): void {
-    try {
-      game.load(snapshot);
-    } catch (error) {
-      if (error instanceof GameError && error.kind === "SessionMismatch") {
-        console.log(error.message);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
+  
   onMount(() => {
-    const maybeSnapshot = localStorage.getItem("snapshot");
-    if (maybeSnapshot) {
-      tryLoadSnapshot(JSON.parse(maybeSnapshot));
+    const savedata: SaveData | null = JSON.parse(localStorage.getItem("savedata") as any);
+    if (savedata && savedata.session === session) {
+      game.load(savedata.snapshot);
     } else {
       help.show();
     }
@@ -73,7 +66,10 @@
         }
       }
       // store the snapshot persistently each time its updated
-      localStorage.setItem("snapshot", JSON.stringify(game.dump()));
+      localStorage.setItem(
+        "savedata",
+        JSON.stringify({ session, snapshot: game.dump() }),
+      );
     });
   });
 </script>
