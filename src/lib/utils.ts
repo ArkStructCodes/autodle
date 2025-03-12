@@ -1,4 +1,4 @@
-class AssertionError extends Error {
+export class AssertionError extends Error {
   constructor(message?: string) {
     super(message ?? "assertion failed");
   }
@@ -25,6 +25,11 @@ export function* intersectingProperties<T extends object>(
   }
 }
 
-export function pickRandomItem<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)];
+export function randomInteger(upto: number): number {
+  return Math.floor(Math.random() * upto);
+}
+
+export function pickRandomItem<T>(iterable: Iterable<T>): T {
+  const array = Array.isArray(iterable) ? iterable : Array.from(iterable);
+  return array[randomInteger(array.length)];
 }

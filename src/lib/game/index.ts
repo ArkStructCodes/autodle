@@ -110,7 +110,7 @@ export class Game implements Readable<GameSnapshot> {
     if (!this.state.hintAvailable) {
       throw new GameError("HintUnavailable");
     }
-    const key = pickRandomItem(Array.from(this.state.unrevealedKeys));
+    const key = pickRandomItem(this.state.unrevealedKeys);
     const hint = { [key]: this.state.params.answer[key] };
     this.addNewGuess(hint);
     this.state.hintUsed = true;
