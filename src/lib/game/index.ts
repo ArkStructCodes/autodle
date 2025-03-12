@@ -33,7 +33,11 @@ export class Game implements Readable<GameSnapshot> {
    * @param - Parameters for the session.
    */
   constructor(params: GameParams) {
-    this.state = new GameState(params);
+    try {
+      this.state = new GameState(params);
+    } catch (error) {
+      throw new GameError("InvalidParams", { cause: error });
+    }
     this.snapshot = writable(this.dump());
   }
 
