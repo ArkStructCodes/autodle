@@ -49,7 +49,7 @@
     fireConfetti(0.1, { spread: 120, startVelocity: 30, decay: 0.9, scalar: 1.2 });
     fireConfetti(0.1, { spread: 120, startVelocity: 45 });
   }
-  
+
   onMount(() => {
     const savedata: SaveData | null = JSON.parse(localStorage.getItem("savedata") as any);
     if (savedata && savedata.session === session) {

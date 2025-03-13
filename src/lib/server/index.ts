@@ -24,10 +24,10 @@ export async function setGameParams(setOptions?: SetOptions): Promise<void> {
   await redis.set("answerIndex", randomInteger(cars.length), setOptions);
   await redis.set("updatedAt", Date.now(), setOptions);
 
-  const answerIndex = parseInt(await redis.get("answerIndex") as any);
+  const answerIndex = parseInt((await redis.get("answerIndex")) as any);
   assert(!isNaN(answerIndex));
 
-  updatedAt = parseInt(await redis.get("updatedAt") as any);
+  updatedAt = parseInt((await redis.get("updatedAt")) as any);
   assert(!isNaN(updatedAt));
 
   gameParams = {
