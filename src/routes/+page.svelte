@@ -1,5 +1,4 @@
 <script lang="ts">
-  import confetti from "canvas-confetti";
   import { onMount } from "svelte";
 
   import { assertNonNullish } from "$lib/utils";
@@ -10,6 +9,7 @@
   import githubIcon from "$lib/icons/github.svg?raw";
   import helpIcon from "$lib/icons/help.svg?raw";
 
+  import { celebrate } from "./confetti";
   import Help from "./Help.svelte";
   import Controls from "./Controls.svelte";
   import GuessMeter from "./GuessMeter.svelte";
@@ -33,27 +33,12 @@
   let search: Search;
   let summary: GameSummary;
 
-  // adapted from https://www.kirilv.com/canvas-confetti/#realistic
-  function fireConfetti(particleRatio: number, options: confetti.Options): void {
-    confetti({
-      origin: { y: 0.6 },
-      ...options,
-      particleCount: Math.floor(200 * particleRatio),
-    });
-  }
-
-  function celebrate(): void {
-    fireConfetti(0.25, { spread: 30, startVelocity: 60 });
-    fireConfetti(0.2, { spread: 60 });
-    fireConfetti(0.35, { spread: 100, decay: 0.9, scalar: 0.8 });
-    fireConfetti(0.1, { spread: 120, startVelocity: 30, decay: 0.9, scalar: 1.2 });
-    fireConfetti(0.1, { spread: 120, startVelocity: 45 });
-  }
-
   onMount(() => {
     const savedata: SaveData | null = JSON.parse(localStorage.getItem("savedata") as any);
-    if (savedata && savedata.session === session) {
-      game.load(savedata.snapshot);
+    if (savedata) {
+      if (savedata.session === session) {
+        game.load(savedata.snapshot);
+      }
     } else {
       help.show();
     }
