@@ -46,10 +46,10 @@
 <Modal bind:dialog>
   <h2 class="text-3xl font-black">You {snapshot.status}!</h2>
   <div class="my-6">
-    <p>The answer was a <b>{answer.year} {answer.name}</b>.</p>
+    <p>The answer was a <b class="px-1">{answer.year} {answer.name}</b>.</p>
     {#if snapshot.status === "won"}
-      {@const num = snapshot.guessesRemaining}
-      <p>You had <b>{num}</b> {num === 1 ? "guess" : "guesses"} remaining.</p>
+      {@const n = snapshot.guessesRemaining}
+      <p>You had <b class="px-1">{n}</b> {n === 1 ? "guess" : "guesses"} remaining.</p>
     {/if}
   </div>
 
