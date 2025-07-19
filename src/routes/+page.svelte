@@ -1,26 +1,24 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { slide } from "svelte/transition";
 
-  import { assertNonNullish } from "$lib/utils";
-  import { Game, type GameSnapshot } from "$lib/game";
+  import { Game } from "$lib/game";
   import { GameError } from "$lib/game/error";
+  import { assertNonNullish } from "$lib/utils";
   import Alert, { alert } from "$lib/components/Alert.svelte";
   import Search, { type SearchResult } from "$lib/components/Search.svelte";
   import githubIcon from "$lib/icons/github.svg?raw";
   import helpIcon from "$lib/icons/help.svg?raw";
 
   import { celebrate } from "./confetti";
+  import { load, save } from "./savedata";
   import Help from "./Help.svelte";
   import Controls from "./Controls.svelte";
   import GuessMeter from "./GuessMeter.svelte";
   import GuessTable from "./GuessTable.svelte";
   import GameSummary from "./GameSummary.svelte";
+  import Placeholder from "./Placeholder.svelte";
   import type { PageProps } from "./$types";
-
-  interface SaveData {
-    session: string;
-    snapshot: GameSnapshot;
-  }
 
   let { data }: PageProps = $props();
   const { gameParams, session, nextUpdateAt, searchItems } = data;
@@ -34,7 +32,7 @@
   let summary: GameSummary;
 
   onMount(() => {
-    const savedata: SaveData | null = JSON.parse(localStorage.getItem("savedata") as any);
+    const savedata = load();
     if (savedata) {
       if (savedata.session === session) {
         game.load(savedata.snapshot);
@@ -50,11 +48,8 @@
           setTimeout(celebrate, 100);
         }
       }
-      // store the snapshot persistently each time its updated
-      localStorage.setItem(
-        "savedata",
-        JSON.stringify({ session, snapshot: game.dump() }),
-      );
+      // store the snapshot persistently each time the game is updated
+      save({session, snapshot: game.dump() });
     });
   });
 </script>
@@ -105,7 +100,13 @@
       />
     </div>
     <div class="w-full flex-1 overflow-auto xl:w-3/4">
-      <GuessTable answer={gameParams.answer} guesses={$game.guesses} />
+      {#if $game.guessesRemaining == gameParams.guessLimit}
+        <Placeholder />
+      {:else}
+        <div in:slide>
+          <GuessTable answer={gameParams.answer} guesses={$game.guesses} />
+        </div>
+      {/if}
     </div>
   </main>
 </div>
